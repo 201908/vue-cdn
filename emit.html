@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+    	<simple-com v-on:increment="incretol($event)" :title="totalTapNum"></simple-com>
+	    <simple-com v-on:increment="incretol" :title="totalTapNum"></simple-com>
+        <!-- 直接在 DOM (即非字符串的模板) 中使用时只有 kebab-case 是有效的。 -->
+	    <!-- <simpleCom v-on:increment="incretol"></simpleCom> -->
+	    <p>{{total}}</p>
+    </div>
+    <script>
+    // 子组件
+    // 全局组件
+    Vue.component('simpleCom', {
+        template: `
+            <div><button v-on:click="incresone">{{count}}</button>{{title}}</div>
+		`
+        ,
+        props:["title"],
+        data: function() {
+            return {
+                count: 0,
+                text: "子组件向父组件传值"
+            }
+        },
+        methods: {
+            incresone: function() {
+                console.log(222)
+                this.count += 1
+                //监听自定义的事件
+                this.$on('increment', function(msg) {
+                    //获取$emit方法传递的第二个参数
+                    console.log(msg);
+                    //alert("1");
+                })
+                //触发自定义的事件
+                this.$emit('increment', this.text)
+            }
+        }
+    })
+
+    // 父组件
+    var vm = new Vue({
+        el: "#app",
+        data: {
+            total: 0,
+            totalTapNum: "父组件向子组件传值"
+        },
+        methods: {
+            incretol: function(text) {
+                this.total += 1;
+                this.totalTapNum = text
+            }
+        }
+    })
+
+    vm.$on('test', function (msg) {
+      console.log(msg)
+    })
+    vm.$emit('test', 'hi')
+    </script>
+</body>
+
+</html>
